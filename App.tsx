@@ -1,20 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator, StatusBar, StyleSheet } from 'react-native';
+import { initDatabase } from './src/db/db';
+import { HomeScreen } from './src/screens/HomeScreen';
 
 export default function App() {
+  const [isDbReady, setIsDbReady] = useState<boolean>(false);
+
+  useEffect(() => {
+    initDatabase()
+      .then(() => setIsDbReady(true))
+      .catch((err) => console.error('Rakenduse initsialiseerimise viga:', err));
+  }, []);
+
+  if (!isDbReady) {
+    return (
+      <View style={styles.splash}>
+        <ActivityIndicator size="large" color="#58A6FF" />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <StatusBar barStyle="light-content" backgroundColor="#0D1117" />
+      <HomeScreen />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  splash: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    backgroundColor: '#0D1117',
     justifyContent: 'center',
+    alignItems: 'center',
   },
 });
